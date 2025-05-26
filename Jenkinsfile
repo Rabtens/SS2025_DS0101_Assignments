@@ -1,7 +1,7 @@
 pipeline {
 	agent any
 	tools {
-    	nodejs 'NodeJS'
+    	nodejs 'NodeJS 24.0.2'
 	}
 
 	stages {
@@ -9,7 +9,7 @@ pipeline {
     	stage('Checkout') {
         	steps {
             	git branch: 'main',
-            	Url: 'https://github.com/Rabtens/SS2025_DSO101_-02230289-/tree/main/assignment1%2C2_3'
+            	Url: 'https://github.com/Rabtens/SS2025_DS0101_Assignments'
         	}
     	}
 
@@ -47,7 +47,7 @@ pipeline {
                 	docker.build('rabtens/node-app:latest')
                	 
                 	// Push to Docker Hub (requires credentials)
-                	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-creds') {
+                	docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-password') {
                     	docker.image('rabtens/node-app:latest').push()
                 	}
             	}
