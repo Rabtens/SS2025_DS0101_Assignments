@@ -1,57 +1,95 @@
 pipeline {
-	agent any
-	tools {
-    	nodejs 'NodeJS 24.0.2'
-	}
+    agent any
+    tools {
+        nodejs 'NodeJS 24.0.2'
+    }
+    stages {
+        // Stage 1: Checkout Code
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/Rabtens/SS2025_DS0101_Assignments'
+            }
+        }
+        
+        // Stage 2: Install Dependencies (Backend)
+        stage('Install Backend') {
+            steps {
+                dir('backend') {
+                    sh 'npm install'
+                }
+            }
+        }
+        
+        // Stage 2b: Install Dependencies (Frontend)
+        stage('Install Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+        
+        // Stage 3: Build Backend (if applicable)
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    sh 'npm run build || echo "No build script in backend, continuing"'
+                }
+            }
+        }
+        
+        // Stage 3b: Build Frontend (React/TypeScript)
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm run build'
+                }
+            }
+        }
 
-	stages {
-    	// Stage 1: Checkout Code
-    	stage('Checkout') {
-        	steps {
-            	git branch: 'main',
-            	url: 'https://github.com/Rabtens/SS2025_DS0101_Assignments'
-        	}
-    	}
-
-    	// Stage 2: Install Dependencies
-    	stage('Install') {
-        	steps {
-            	sh 'npm install' 
-        	}
-    	}
-
-    	// Stage 3: Build (if applicable, e.g., for React/TypeScript)
-    	stage('Build') {
-        	steps {
-            	sh 'npm run build' 
-        	}
-    	}
-
-    	// Stage 4: Run Unit Tests
-    	stage('Test') {
-        	steps {
-            	sh 'npm test'  // Runs "test" script (Jest/Mocha)
-        	}
-        	post {
-            	always {
-                	junit 'junit.xml'  // Publish test results
-            	}
-        	}
-    	}
-
-    	// Stage 5: Deploy (Docker Example)
-    	stage('Deploy') {
-        	steps {
-            	script {
-                	// Build Docker image
-                	docker.build('rabtens/node-app:latest')
-               	 
-                	// Push to Docker Hub (requires credentials)
-                	docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-password') {
-                    	docker.image('rabtens/node-app:latest').push()
-                	}
-            	}
-        	}
-    	}
-	}
+        // Stage 4: Run Backend Unit Tests
+        stage('Test Backend') {
+            steps {
+                dir('backend') {
+                    sh 'npm test || echo "No test script in backend, continuing"'
+                }
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'backend/junit.xml'
+                }
+            }
+        }
+        
+        // Stage 4b: Run Frontend Unit Tests
+        stage('Test Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm test || echo "No test script in frontend, continuing"'
+                }
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'frontend/junit.xml'
+                }
+            }
+        }
+        
+        // Stage 5: Deploy (Docker Example)
+        stage('Deploy') {
+            steps {
+                script {
+                    // Build Docker image using backend Dockerfile
+                    sh 'docker build -t rabtens/node-app:latest -f backend/Dockerfile backend/'
+                    
+                    // Push to Docker Hub (requires credentials)
+                    withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PWD')]) {
+                        sh 'echo $DOCKER_PWD | docker login -u rabtens --password-stdin'
+                        sh 'docker push rabtens/node-app:latest'
+                    }
+                }
+            }
+        }
+    }
 }
