@@ -9,7 +9,7 @@ pipeline {
     	stage('Checkout') {
         	steps {
             	git branch: 'main',
-            	Url: 'https://github.com/Rabtens/SS2025_DS0101_Assignments'
+            	url: 'https://github.com/Rabtens/SS2025_DS0101_Assignments'
         	}
     	}
 
