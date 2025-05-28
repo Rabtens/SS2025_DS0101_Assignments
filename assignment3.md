@@ -218,12 +218,21 @@ jobs:
 - Health checks passed  
 - Live app available  
 
-### Screenshots (to be added)
-- GitHub Actions logs  
-- DockerHub repository  
-- Render dashboard  
-- Live app URL  
+### Screenshots
 
+![alt text](<assgn3/Screenshot from 2025-05-26 21-33-33.png>)
+
+![alt text](<assgn3/Screenshot from 2025-05-26 21-34-28.png>)
+
+![alt text](<assgn3/Screenshot from 2025-05-26 21-35-20.png>)
+
+![alt text](<assgn3/Screenshot from 2025-05-26 21-37-40.png>)
+
+![alt text](<assgn3/Screenshot from 2025-05-26 21-41-03.png>)
+
+![alt text](<assgn3/Screenshot from 2025-05-26 21-44-49.png>)
+
+![alt text](<assgn3/Screenshot from 2025-05-26 21-47-24.png>)
 ---
 
 ### Learning Outcomes
